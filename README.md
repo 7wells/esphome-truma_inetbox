@@ -17,7 +17,7 @@ esphome:
   name: "esphome-truma"
 
 external_components:
-  - source: github://Fabian-Schmidt/esphome-truma_inetbox
+  - source: github://7wells/esphome-truma_inetbox
 
 esp32:
   board: mhetesp32devkit

@@ -20,7 +20,7 @@ from esphome.const import (
 from .. import truma_inetbox_ns, CONF_TRUMA_INETBOX_ID, TrumaINetBoxApp
 
 DEPENDENCIES = ["truma_inetbox"]
-CODEOWNERS = ["@Fabian-Schmidt"]
+CODEOWNERS = ["@7wells"]
 
 TrumaSensor = truma_inetbox_ns.class_(
     "TrumaSensor", sensor.Sensor, cg.Component)
