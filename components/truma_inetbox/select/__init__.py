@@ -1,4 +1,4 @@
-from esphome.components import select
+from esphome.components import select, web_server
 import esphome.config_validation as cv
 import esphome.codegen as cg
 from esphome.const import (
@@ -9,6 +9,7 @@ from esphome.const import (
     ICON_THERMOMETER,
     CONF_ENTITY_CATEGORY,
     CONF_DISABLED_BY_DEFAULT,
+    CONF_WEB_SERVER,
 )
 from .. import truma_inetbox_ns, CONF_TRUMA_INETBOX_ID, TrumaINetBoxApp
 
@@ -82,7 +83,7 @@ CONFIG_SCHEMA = cv.Schema({
     ),
     cv.Optional(CONF_ENTITY_CATEGORY): cv.entity_category,
     cv.Optional(CONF_DISABLED_BY_DEFAULT, default=False): cv.boolean,
-}).extend(cv.COMPONENT_SCHEMA)
+}).extend(web_server.WEBSERVER_SORTING_SCHEMA).extend(cv.COMPONENT_SCHEMA)
 
 
 FINAL_VALIDATE_SCHEMA = set_default_based_on_type()
@@ -99,3 +100,6 @@ async def to_code(config):
 
     type_key = config[CONF_TYPE].upper()
     cg.add(var.set_type(CONF_SUPPORTED_TYPE[type_key][CONF_TYPE]))
+
+    if web_server_config := config.get(CONF_WEB_SERVER):
+        await web_server.add_entity_config(var, web_server_config)

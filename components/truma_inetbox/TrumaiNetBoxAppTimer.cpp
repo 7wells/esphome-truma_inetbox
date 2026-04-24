@@ -77,7 +77,7 @@ bool TrumaiNetBoxAppTimer::action_timer_disable() {
   return true;
 }
 
-bool TrumaiNetBoxAppTimer::action_timer_activate(u_int16_t start, u_int16_t stop, uint8_t room_temperature,
+bool TrumaiNetBoxAppTimer::action_timer_activate(uint16_t start, uint16_t stop, uint8_t room_temperature,
                                                  HeatingMode mode, uint8_t water_temperature, EnergyMix energy_mix,
                                                  ElectricPowerLevel el_power_level) {
   if (!this->can_update()) {

@@ -20,7 +20,7 @@ uint8_t data_checksum(const uint8_t *message, uint8_t length, uint16_t sum) {
   return (~sum);
 }
 
-float temp_code_to_decimal(u_int16_t val, float zero) {
+float temp_code_to_decimal(uint16_t val, float zero) {
   if (val == 0) {
     return zero;
   }
@@ -34,9 +34,9 @@ float water_temp_200_fix(float val) {
   return val;
 }
 
-float temp_code_to_decimal(TargetTemp val, float zero) { return temp_code_to_decimal((u_int16_t) val, zero); }
+float temp_code_to_decimal(TargetTemp val, float zero) { return temp_code_to_decimal((uint16_t) val, zero); }
 
-TargetTemp decimal_to_temp(uint8_t val) { return (TargetTemp) ((((u_int16_t) val) + 273) * 10); }
+TargetTemp decimal_to_temp(uint8_t val) { return (TargetTemp) ((((uint16_t) val) + 273) * 10); }
 
 TargetTemp decimal_to_temp(float val) { return (TargetTemp) ((val + 273) * 10); }
 
@@ -164,7 +164,7 @@ const std::string operating_status_to_str(OperatingStatus val) {
   }
 }
 
-ElectricPowerLevel decimal_to_el_power_level(u_int16_t val) {
+ElectricPowerLevel decimal_to_el_power_level(uint16_t val) {
   if (val >= 1800) {
     return ElectricPowerLevel::ELECTRIC_POWER_LEVEL_1800;
   } else if (val >= 900) {

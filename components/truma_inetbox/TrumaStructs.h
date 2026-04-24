@@ -60,8 +60,8 @@ struct StatusFrameHeater {  // NOLINT(altera-struct-pack-align)
   EnergyMix energy_mix_a;
   // Ignored by response
   EnergyMix energy_mix_b;
-  u_int16_t current_temp_water;
-  u_int16_t current_temp_room;
+  uint16_t current_temp_water;
+  uint16_t current_temp_room;
   OperatingStatus operating_status;
   uint8_t error_code_low;
   uint8_t error_code_high;
@@ -166,7 +166,7 @@ struct StatusFrameDevice {  // NOLINT(altera-struct-pack-align)
   TRUMA_DEVICE_STATE state;
   // 0x00
   uint8_t unknown_1;
-  u_int16_t hardware_revision_major;
+  uint16_t hardware_revision_major;
   uint8_t hardware_revision_minor;
   // `software_revision[0].software_revision[1].software_revision[2]`
   // software_revision[0] -> TRUMA_DEVICE

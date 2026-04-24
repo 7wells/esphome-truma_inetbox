@@ -7,12 +7,15 @@ namespace truma_inetbox {
 static const char *const TAG = "truma_inetbox.room_climate";
 void TrumaRoomClimate::setup() {
   this->parent_->get_heater()->add_on_message_callback([this](const StatusFrameHeater *status_heater) {
-    // Publish updated state
-    this->target_temperature = temp_code_to_decimal(status_heater->target_temp_room);
-    this->current_temperature = temp_code_to_decimal(status_heater->current_temp_room);
-    this->mode = std::isnan(this->target_temperature) ? climate::CLIMATE_MODE_OFF : climate::CLIMATE_MODE_HEAT;
+    const bool heating_off = status_heater->heating_mode == HeatingMode::HEATING_MODE_OFF ||
+                             status_heater->target_temp_room == TargetTemp::TARGET_TEMP_OFF;
 
-    switch (status_heater->heating_mode) {
+    // Publish updated state
+    this->target_temperature = heating_off ? NAN : temp_code_to_decimal(status_heater->target_temp_room);
+    this->current_temperature = temp_code_to_decimal(status_heater->current_temp_room);
+    this->mode = heating_off ? climate::CLIMATE_MODE_OFF : climate::CLIMATE_MODE_HEAT;
+
+    switch (heating_off ? HeatingMode::HEATING_MODE_OFF : status_heater->heating_mode) {
       case HeatingMode::HEATING_MODE_ECO:
         this->fan_mode = climate::CLIMATE_FAN_LOW;
         break;
@@ -131,14 +134,22 @@ climate::ClimateTraits TrumaRoomClimate::traits() {
   // The capabilities of the climate device
   auto traits = climate::ClimateTraits();
   traits.set_supports_current_temperature(true);
-  traits.set_supported_modes({this->supported_modes_});
+  for (auto mode : this->supported_modes_) {
+    traits.add_supported_mode(mode);
+  }
 
-  traits.set_supported_fan_modes({{
-      climate::CLIMATE_FAN_OFF,
-      climate::CLIMATE_FAN_LOW,
-      climate::CLIMATE_FAN_MEDIUM,
-      climate::CLIMATE_FAN_HIGH,
-  }});
+  if (this->supported_fan_modes_configured_) {
+    for (auto mode : this->supported_fan_modes_) {
+      traits.add_supported_fan_mode(mode);
+    }
+  } else {
+    traits.set_supported_fan_modes({{
+        climate::CLIMATE_FAN_OFF,
+        climate::CLIMATE_FAN_LOW,
+        climate::CLIMATE_FAN_MEDIUM,
+        climate::CLIMATE_FAN_HIGH,
+    }});
+  }
   
   // traits.set_supported_presets({{
   //     climate::CLIMATE_PRESET_NONE,
@@ -154,6 +165,11 @@ climate::ClimateTraits TrumaRoomClimate::traits() {
   
 void TrumaRoomClimate::set_supported_modes(const std::set<climate::ClimateMode> &modes) {
   this->supported_modes_ = modes;
+}
+
+void TrumaRoomClimate::set_supported_fan_modes(const std::set<climate::ClimateFanMode> &modes) {
+  this->supported_fan_modes_ = modes;
+  this->supported_fan_modes_configured_ = true;
 }
 
 }  // namespace truma_inetbox

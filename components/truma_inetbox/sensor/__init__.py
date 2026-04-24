@@ -1,4 +1,4 @@
-from esphome.components import sensor
+from esphome.components import sensor, web_server
 import esphome.config_validation as cv
 import esphome.codegen as cg
 from esphome.const import (
@@ -17,6 +17,7 @@ from esphome.const import (
     UNIT_EMPTY,
     ICON_GAS_CYLINDER,
     ICON_POWER,
+    CONF_WEB_SERVER,
 )
 from .. import truma_inetbox_ns, CONF_TRUMA_INETBOX_ID, TrumaINetBoxApp
 
@@ -115,7 +116,7 @@ CONFIG_SCHEMA = sensor.sensor_schema(
         cv.GenerateID(CONF_TRUMA_INETBOX_ID): cv.use_id(TrumaINetBoxApp),
         cv.Required(CONF_TYPE): cv.enum(CONF_SUPPORTED_TYPE, upper=True),
     }
-).extend(cv.COMPONENT_SCHEMA)
+).extend(web_server.WEBSERVER_SORTING_SCHEMA).extend(cv.COMPONENT_SCHEMA)
 FINAL_VALIDATE_SCHEMA = set_default_based_on_type()
 
 
@@ -126,3 +127,6 @@ async def to_code(config):
     await cg.register_parented(var, config[CONF_TRUMA_INETBOX_ID])
 
     cg.add(var.set_type(CONF_SUPPORTED_TYPE[config[CONF_TYPE]][CONF_CLASS]))
+
+    if web_server_config := config.get(CONF_WEB_SERVER):
+        await web_server.add_entity_config(var, web_server_config)
