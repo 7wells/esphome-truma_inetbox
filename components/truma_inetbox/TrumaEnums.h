@@ -5,7 +5,7 @@
 namespace esphome {
 namespace truma_inetbox {
 
-enum class HeatingMode : u_int16_t {
+enum class HeatingMode : uint16_t {
   HEATING_MODE_OFF = 0x0,
   // COMBI
   HEATING_MODE_ECO = 0x1,
@@ -28,13 +28,13 @@ enum class HeatingMode : u_int16_t {
   // FF00
 };
 
-enum class ElectricPowerLevel : u_int16_t {
+enum class ElectricPowerLevel : uint16_t {
   ELECTRIC_POWER_LEVEL_0 = 0,
   ELECTRIC_POWER_LEVEL_900 = 900,
   ELECTRIC_POWER_LEVEL_1800 = 1800,
 };
 
-enum class TargetTemp : u_int16_t {
+enum class TargetTemp : uint16_t {
   TARGET_TEMP_OFF = 0x0,
 
   // 40C

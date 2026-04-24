@@ -136,7 +136,7 @@ bool TrumaiNetBoxAppHeater::action_heater_water(TargetTemp temperature) {
   return true;
 }
 
-bool TrumaiNetBoxAppHeater::action_heater_electric_power_level(u_int16_t value) {
+bool TrumaiNetBoxAppHeater::action_heater_electric_power_level(uint16_t value) {
   if (!this->can_update()) {
     ESP_LOGW(TAG, "Cannot update Truma.");
     return false;

@@ -73,6 +73,11 @@ uint32_t ESP32ArduinoUARTComponent::get_config() {
   return config;
 }
 
+void ESP32ArduinoUARTComponent::check_logger_conflict() {
+  // Compatibility stub for ESPHome 2026.x
+  // The old logger hardware-serial API is no longer available.
+}
+
 void ESP32ArduinoUARTComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up UART...");
   // Use Arduino HardwareSerial UARTs if all used pins match the ones
@@ -150,19 +155,6 @@ int ESP32ArduinoUARTComponent::available() { return this->hw_serial_->available(
 void ESP32ArduinoUARTComponent::flush() {
   ESP_LOGVV(TAG, "    Flushing...");
   this->hw_serial_->flush();
-}
-
-void ESP32ArduinoUARTComponent::check_logger_conflict() {
-#ifdef USE_LOGGER
-  if (this->hw_serial_ == nullptr || logger::global_logger->get_baud_rate() == 0) {
-    return;
-  }
-
-  if (this->hw_serial_ == logger::global_logger->get_hw_serial()) {
-    ESP_LOGW(TAG, "  You're using the same serial port for logging and the UART component. Please "
-                  "disable logging over the serial port by setting logger->baud_rate to 0.");
-  }
-#endif
 }
 
 }  // namespace uart

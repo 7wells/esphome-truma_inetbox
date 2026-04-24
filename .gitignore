@@ -2,8 +2,18 @@
 # This is an example and may include too much for your use-case.
 # You can modify this file to suit your needs.
 /.esphome/
-/secrets.yaml
+**/secrets.yaml
 
 **/__pycache__/**
 
 /local_*
+
+# Python virtual environment
+.venv/
+.venv-esphome-2025/
+venv/
+
+# Build artifacts
+a.out
+*.o
+*.so

@@ -84,12 +84,14 @@ void TrumaHeaterSelect::control(const std::string &value) {
   auto heater_device = this->parent_->get_heater_device();
   auto status_heater = this->parent_->get_heater()->get_status();
   float temp = temp_code_to_decimal(status_heater->target_temp_room, 0);
-  if (index.value() > 0 && temp < 5) {
-    temp = 5;
-  }
 
   switch (this->type_) {
     case TRUMA_SELECT_TYPE::HEATER_FAN_MODE:
+      if (index.value() > 0 && temp < 5) {
+        ESP_LOGW(TAG, "Heating fan level requires a room target temperature of at least 5 C.");
+        this->publish_state(this->at((size_t) TRUMA_SELECT_TYPE_HEATER_FAN_MODE::OFF).value());
+        return;
+      }
       switch ((TRUMA_SELECT_TYPE_HEATER_FAN_MODE) index.value()) {
         case TRUMA_SELECT_TYPE_HEATER_FAN_MODE::ECO:
           // case TRUMA_SELECT_TYPE_HEATER_FAN_MODE::VARIO_HEAT_NIGHT:
@@ -110,6 +112,14 @@ void TrumaHeaterSelect::control(const std::string &value) {
           }
           break;
         case TRUMA_SELECT_TYPE_HEATER_FAN_MODE::BOOST:
+          if (heater_device != TRUMA_DEVICE::CPPLUS_VARIO) {
+            float current_temp = temp_code_to_decimal(status_heater->current_temp_room, NAN);
+            if (!std::isnan(current_temp) && (temp - current_temp) <= 10.0f) {
+              ESP_LOGW(TAG, "BOOST requested without required room temperature delta, falling back to HIGH.");
+              this->parent_->get_heater()->action_heater_room(static_cast<u_int8_t>(temp), HeatingMode::HEATING_MODE_HIGH);
+              break;
+            }
+          }
           this->parent_->get_heater()->action_heater_room(static_cast<u_int8_t>(temp), HeatingMode::HEATING_MODE_BOOST);
           break;
         default:

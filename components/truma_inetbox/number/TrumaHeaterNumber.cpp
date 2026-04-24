@@ -34,7 +34,7 @@ void TrumaHeaterNumber::control(float value) {
       this->parent_->get_heater()->action_heater_water(static_cast<u_int8_t>(value));
       break;
     case TRUMA_NUMBER_TYPE::ELECTRIC_POWER_LEVEL:
-      this->parent_->get_heater()->action_heater_electric_power_level(static_cast<u_int16_t>(value));
+      this->parent_->get_heater()->action_heater_electric_power_level(static_cast<uint16_t>(value));
       break;
     default:
       break;

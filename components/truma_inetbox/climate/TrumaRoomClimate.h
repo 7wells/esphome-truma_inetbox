@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include "esphome/components/climate/climate.h"
 #include "esphome/core/component.h"
 #include "esphome/components/truma_inetbox/TrumaiNetBoxApp.h"
@@ -21,9 +22,12 @@ namespace esphome {
     void set_visual_temperature_step(float value) { this->visual_temperature_step_ = value; }
 
     void set_supported_modes(const std::set<climate::ClimateMode> &modes);
+    void set_supported_fan_modes(const std::set<climate::ClimateFanMode> &modes);
   
    protected:
     std::set<esphome::climate::ClimateMode> supported_modes_;
+    std::set<esphome::climate::ClimateFanMode> supported_fan_modes_;
+    bool supported_fan_modes_configured_{false};
     float visual_min_temperature_{5.0};
     float visual_max_temperature_{30.0};
     float visual_temperature_step_{0.5};

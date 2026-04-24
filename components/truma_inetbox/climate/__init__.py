@@ -1,4 +1,4 @@
-from esphome.components import climate
+from esphome.components import climate, web_server
 import esphome.config_validation as cv
 import esphome.codegen as cg
 from esphome.const import (
@@ -10,15 +10,23 @@ from esphome.const import (
     CONF_MIN_TEMPERATURE,
     CONF_MAX_TEMPERATURE,
     CONF_TEMPERATURE_STEP,
+    CONF_WEB_SERVER,
 )
 from esphome.components.climate import (
     ClimateMode,
+    ClimateFanMode,
 )
 
 CLIMATE_MODES = {
     "OFF": ClimateMode.CLIMATE_MODE_OFF,
     "HEAT": ClimateMode.CLIMATE_MODE_HEAT,
     "AUTO": ClimateMode.CLIMATE_MODE_AUTO,
+}
+CLIMATE_FAN_MODES = {
+    "OFF": ClimateFanMode.CLIMATE_FAN_OFF,
+    "LOW": ClimateFanMode.CLIMATE_FAN_LOW,
+    "MEDIUM": ClimateFanMode.CLIMATE_FAN_MEDIUM,
+    "HIGH": ClimateFanMode.CLIMATE_FAN_HIGH,
 }
 CLIMATE_VISUAL_SCHEMA = cv.Schema({
     cv.Optional(CONF_TARGET_TEMPERATURE, default={}): cv.Schema({
@@ -59,12 +67,13 @@ CONFIG_SCHEMA = cv.Schema({
 
     cv.Optional("preset"): cv.All(cv.ensure_list(cv.string)),  # If you want presets
     cv.Optional("supported_modes", default=["OFF", "HEAT"]): cv.ensure_list(cv.enum(CLIMATE_MODES, upper=True)),
+    cv.Optional("supported_fan_modes"): cv.ensure_list(cv.enum(CLIMATE_FAN_MODES, upper=True)),
 }).extend(cv.COMPONENT_SCHEMA).extend({
     cv.Optional("disabled_by_default", default=False): cv.boolean,
     cv.Optional("entity_category"): cv.entity_category,
     cv.Optional("icon"): cv.icon,
     cv.Optional(CONF_VISUAL, default={}): CLIMATE_VISUAL_SCHEMA,
-})
+}).extend(web_server.WEBSERVER_SORTING_SCHEMA)
 
 FINAL_VALIDATE_SCHEMA = set_default_based_on_type()
 
@@ -86,3 +95,10 @@ async def to_code(config):
     if "supported_modes" in config:
         modes = [CLIMATE_MODES[m] for m in config["supported_modes"]]
         cg.add(var.set_supported_modes(modes))
+
+    if "supported_fan_modes" in config and config[CONF_TYPE] == "ROOM":
+        fan_modes = [CLIMATE_FAN_MODES[m] for m in config["supported_fan_modes"]]
+        cg.add(var.set_supported_fan_modes(fan_modes))
+
+    if web_server_config := config.get(CONF_WEB_SERVER):
+        await web_server.add_entity_config(var, web_server_config)

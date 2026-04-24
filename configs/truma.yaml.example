@@ -1,0 +1,260 @@
+# Chip is ESP32-D0WD (revision v1.1)
+# Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+# Crystal is 40MHz
+
+# Substitutions (https://esphome.io/components/substitutions.html)
+substitutions:
+  device_name: "esp32-smartavan"
+  friendly_name: "ESP32 Smartavan"
+  lin_uart_tx_pin: "16"
+  lin_uart_rx_pin: "17"
+  use_address: "192.168.11.4"
+  ap_static_ip: "192.168.11.4"
+  ap_gateway: "192.168.11.1"
+  ap_subnet: "255.255.255.0"
+  rutx_static_ip: "192.168.11.4"
+  rutx_gateway: "192.168.11.1"
+  rutx_subnet: "255.255.255.0"
+  rutx_dns1: "192.168.11.1"
+  rutx_dns2: "192.168.11.1"
+
+# Core Configuration (https://esphome.io/components/esphome.html)
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  name_add_mac_suffix: false
+  min_version: "2025.9.3"
+  project:
+    name: "7wells.truma_minimal"
+    version: "0.1.0"
+
+# Components (https://esphome.io/components/external_components.html)
+external_components:
+  - source:
+      type: local
+      path: ../components
+    components: ["truma_inetbox", "uart"]
+    refresh: never
+
+# Platform (https://esphome.io/components/esp32.html)
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+    version: recommended
+
+# Logger Component (https://esphome.io/components/logger.html)
+logger:
+  level: WARN
+
+# Over-the-Air Updates (https://esphome.io/components/ota.html)
+ota:
+  - platform: esphome
+    password: !secret ota_password
+  - platform: web_server
+
+# WiFi Component (https://esphome.io/components/wifi.html)
+wifi:
+  use_address: ${use_address}
+  ap:  # Set up a WiFi access point
+    ap_timeout: 3min  # Enable AP fallback hotspot after defined time
+    ssid: !secret ap_ssid
+    password: !secret ap_password
+    manual_ip:
+      static_ip: ${ap_static_ip}
+      gateway: ${ap_gateway}
+      subnet: ${ap_subnet}
+  networks:
+    - ssid: !secret wifi_ssid
+      password: !secret wifi_password
+
+# Web Server Component (https://esphome.io/components/web_server.html)
+web_server:
+  version: 2
+  port: 80
+  local: true
+  include_internal: false
+  auth:
+    username: !secret web_username
+    password: !secret web_password
+
+# UART
+uart:
+  - id: lin_uart_bus
+    tx_pin: ${lin_uart_tx_pin}
+    rx_pin: ${lin_uart_rx_pin}
+    baud_rate: 9600
+    data_bits: 8
+    parity: NONE
+    stop_bits: 2
+
+# Truma heating
+truma_inetbox:
+  id: truma_inetbox_app
+  uart_id: lin_uart_bus
+
+climate:
+  - platform: truma_inetbox
+    name: "Heating Control"
+    icon: "mdi:tune"
+    type: ROOM
+    supported_modes:
+      - "OFF"
+      - "HEAT"
+    supported_fan_modes: []
+
+select:
+  - platform: template
+    name: "Heating Fan"
+    icon: "mdi:fan"
+    update_interval: 1s
+    options:
+      - "Off"
+      - "Eco"
+      - "High"
+    lambda: |-
+      if (isnan(id(heating_mode_raw).state) || id(heating_mode_raw).state < 1) {
+        return std::string("Off");
+      }
+      if (id(heating_mode_raw).state < 2) {
+        return std::string("Eco");
+      }
+      return std::string("High");
+    set_action:
+      - if:
+          condition:
+            lambda: 'return x == "Off";'
+          then:
+            - truma_inetbox.heater.set_target_room_temperature:
+                id: truma_inetbox_app
+                temperature: 0
+                heating_mode: "OFF"
+      - if:
+          condition:
+            lambda: 'return x == "Eco";'
+          then:
+            - truma_inetbox.heater.set_target_room_temperature:
+                id: truma_inetbox_app
+                temperature: !lambda |-
+                  if (isnan(id(target_room_temperature_raw).state) || id(target_room_temperature_raw).state < 5) {
+                    return 5;
+                  }
+                  return static_cast<int>(id(target_room_temperature_raw).state);
+                heating_mode: "ECO"
+      - if:
+          condition:
+            lambda: 'return x == "High";'
+          then:
+            - truma_inetbox.heater.set_target_room_temperature:
+                id: truma_inetbox_app
+                temperature: !lambda |-
+                  if (isnan(id(target_room_temperature_raw).state) || id(target_room_temperature_raw).state < 5) {
+                    return 5;
+                  }
+                  return static_cast<int>(id(target_room_temperature_raw).state);
+                heating_mode: "HIGH"
+  - platform: template
+    name: "Water Booster"
+    icon: "mdi:rocket-launch"
+    update_interval: 1s
+    options:
+      - "Off"
+      - "Eco"
+      - "Hot"
+      - "Boost"
+    lambda: |-
+      if (isnan(id(target_water_temperature_raw).state) || id(target_water_temperature_raw).state < 40) {
+        return std::string("Off");
+      }
+      if (id(target_water_temperature_raw).state < 60) {
+        return std::string("Eco");
+      }
+      if (id(target_water_temperature_raw).state < 80) {
+        return std::string("Hot");
+      }
+      return std::string("Boost");
+    set_action:
+      - if:
+          condition:
+            lambda: 'return x == "Off";'
+          then:
+            - truma_inetbox.heater.set_target_water_temperature_enum:
+                id: truma_inetbox_app
+                temperature: "OFF"
+      - if:
+          condition:
+            lambda: 'return x == "Eco";'
+          then:
+            - truma_inetbox.heater.set_target_water_temperature_enum:
+                id: truma_inetbox_app
+                temperature: "ECO"
+      - if:
+          condition:
+            lambda: 'return x == "Hot";'
+          then:
+            - truma_inetbox.heater.set_target_water_temperature_enum:
+                id: truma_inetbox_app
+                temperature: "HIGH"
+      - if:
+          condition:
+            lambda: 'return x == "Boost";'
+          then:
+            - truma_inetbox.heater.set_target_water_temperature_enum:
+                id: truma_inetbox_app
+                temperature: "BOOST"
+
+binary_sensor:
+  - platform: truma_inetbox
+    name: "CP+ Connection"
+    icon: "mdi:connection"
+    type: CP_PLUS_CONNECTED
+  - platform: truma_inetbox
+    name: "Heating Status"
+    icon: "mdi:heating-coil"
+    type: HEATER_ROOM
+  - platform: truma_inetbox
+    name: "Water Status"
+    icon: "mdi:water-boiler"
+    type: HEATER_WATER
+  - platform: truma_inetbox
+    name: "Heating Error"
+    icon: "mdi:alert"
+    type: HEATER_HAS_ERROR
+
+sensor:
+  - platform: truma_inetbox
+    name: "Room Temp."
+    icon: "mdi:thermometer"
+    type: CURRENT_ROOM_TEMPERATURE
+  - platform: truma_inetbox
+    name: "Water Temp."
+    icon: "mdi:thermometer-water"
+    type: CURRENT_WATER_TEMPERATURE
+  - platform: truma_inetbox
+    name: "Target Room Temperature"
+    type: TARGET_ROOM_TEMPERATURE
+    id: target_room_temperature_raw
+    internal: true
+  - platform: truma_inetbox
+    name: "Target Hot Water Temperature"
+    type: TARGET_WATER_TEMPERATURE
+    id: target_water_temperature_raw
+    internal: true
+  - platform: truma_inetbox
+    name: "Heating Mode"
+    type: HEATING_MODE
+    id: heating_mode_raw
+    internal: true
+  - platform: truma_inetbox
+    name: "Error Code"
+    icon: "mdi:message-alert"
+    type: HEATER_ERROR_CODE
+  - platform: truma_inetbox
+    name: "Operating Status"
+    type: OPERATING_STATUS
+    internal: true
+
+button:
+  - platform: restart
+    name: "Restart ESP32"
+    icon: "mdi:restart-alert"
