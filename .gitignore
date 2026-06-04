@@ -17,3 +17,7 @@ venv/
 a.out
 *.o
 *.so
+
+# Local ESPHome / PlatformIO environments
+.venv-esphome-2026/
+.platformio-core-312/
