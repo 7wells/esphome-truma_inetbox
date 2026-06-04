@@ -91,8 +91,7 @@ def _uart_declare_type(value):
     if CORE.is_esp32:
         if CORE.using_arduino:
             return cv.declare_id(ESP32ArduinoUARTComponent)(value)
-        if CORE.using_esp_idf:
-            return cv.declare_id(IDFUARTComponent)(value)
+        return cv.declare_id(IDFUARTComponent)(value)
     if CORE.is_rp2040:
         return cv.declare_id(RP2040UartComponent)(value)
     raise NotImplementedError
@@ -320,6 +319,7 @@ async def register_uart_device(var, config):
         },
         key=CONF_DATA,
     ),
+    synchronous=True,
 )
 async def uart_write_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)

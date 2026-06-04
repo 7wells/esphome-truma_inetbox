@@ -384,6 +384,7 @@ CONF_SUPPORTED_WATER_TEMPERATURE = {
             ),
         },
     ),
+    synchronous=True,
 )
 async def truma_inetbox_heater_set_target_room_temperature_to_code(
     config, action_id, template_arg, args
@@ -410,6 +411,7 @@ async def truma_inetbox_heater_set_target_room_temperature_to_code(
             cv.Required(CONF_TEMPERATURE): cv.templatable(cv.int_range(min=0, max=80)),
         },
     ),
+    synchronous=True,
 )
 async def truma_inetbox_heater_set_target_water_temperature_to_code(
     config, action_id, template_arg, args
@@ -435,6 +437,7 @@ async def truma_inetbox_heater_set_target_water_temperature_to_code(
             ),
         },
     ),
+    synchronous=True,
 )
 async def truma_inetbox_heater_set_target_water_temperature_enum_to_code(
     config, action_id, template_arg, args
@@ -458,6 +461,7 @@ async def truma_inetbox_heater_set_target_water_temperature_enum_to_code(
             cv.Required(CONF_WATT): cv.templatable(cv.int_range(min=0, max=1800)),
         },
     ),
+    synchronous=True,
 )
 async def truma_inetbox_heater_set_electric_power_level_to_code(
     config, action_id, template_arg, args
@@ -485,6 +489,7 @@ async def truma_inetbox_heater_set_electric_power_level_to_code(
             ),
         }
     ),
+    synchronous=True,
 )
 async def truma_inetbox_heater_set_energy_mix_level_to_code(
     config, action_id, template_arg, args
@@ -511,6 +516,7 @@ async def truma_inetbox_heater_set_energy_mix_level_to_code(
             cv.Required(CONF_TEMPERATURE): cv.templatable(cv.int_range(min=0, max=31)),
         },
     ),
+    synchronous=True,
 )
 async def truma_inetbox_aircon_manual_set_target_temperature_to_code(
     config, action_id, template_arg, args
@@ -532,6 +538,7 @@ async def truma_inetbox_aircon_manual_set_target_temperature_to_code(
             cv.GenerateID(): cv.use_id(TrumaINetBoxApp),
         }
     ),
+    synchronous=True,
 )
 async def truma_inetbox_timer_disable_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
@@ -564,6 +571,7 @@ async def truma_inetbox_timer_disable_to_code(config, action_id, template_arg, a
             ),
         }
     ),
+    synchronous=True,
 )
 async def truma_inetbox_timer_activate_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
@@ -602,8 +610,10 @@ async def truma_inetbox_timer_activate_to_code(config, action_id, template_arg, 
         },
         cv.requires_component(CONF_TIME),
     ),
+    synchronous=True,
 )
 async def truma_inetbox_clock_set_to_code(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
     await cg.register_parented(var, config[CONF_ID])
     return var
+

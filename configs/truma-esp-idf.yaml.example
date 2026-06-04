@@ -1,0 +1,136 @@
+# Chip is ESP32-D0WD (revision v1.1)
+# Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse
+
+substitutions:
+  device_name: "esp32-smartavan"
+  friendly_name: "ESP32 Smartavan"
+  lin_uart_tx_pin: "16"
+  lin_uart_rx_pin: "17"
+  use_address: "192.168.11.4"
+  ap_ssid: "ESP32 Smartavan Fallback"
+  ap_password: "change-me"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  name_add_mac_suffix: false
+  min_version: "2026.4.3"
+  project:
+    name: "7wells.truma_esp_idf"
+    version: "0.2.0"
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+    components: ["truma_inetbox", "uart"]
+    refresh: never
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+    version: 5.5.1
+
+logger:
+  level: WARN
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+  - platform: web_server
+
+wifi:
+  use_address: ${use_address}
+  min_auth_mode: WPA2
+  networks:
+    - ssid: !secret wifi_ssid
+      password: !secret wifi_password
+  ap:
+    ssid: ${ap_ssid}
+    password: ${ap_password}
+    ap_timeout: 3min
+
+web_server:
+  version: 2
+  port: 80
+  local: true
+  include_internal: false
+  auth:
+    username: !secret web_username
+    password: !secret web_password
+
+time:
+  - platform: sntp
+    id: real_time
+    timezone: Europe/Berlin
+
+uart:
+  - id: lin_uart_bus
+    tx_pin: ${lin_uart_tx_pin}
+    rx_pin: ${lin_uart_rx_pin}
+    baud_rate: 9600
+    data_bits: 8
+    parity: NONE
+    stop_bits: 2
+
+truma_inetbox:
+  id: truma_inetbox_app
+  uart_id: lin_uart_bus
+  time_id: real_time
+
+climate:
+  - platform: truma_inetbox
+    name: "Heating Control"
+    icon: "mdi:tune"
+    type: ROOM
+    supported_modes:
+      - "OFF"
+      - "HEAT"
+
+select:
+  - platform: truma_inetbox
+    name: "Heating Fan"
+    icon: "mdi:fan"
+    type: HEATER_FAN_MODE_COMBI
+  - platform: truma_inetbox
+    name: "Energy Mix"
+    icon: "mdi:gas-burner"
+    type: HEATER_ENERGY_MIX_GAS
+
+binary_sensor:
+  - platform: truma_inetbox
+    name: "CP+ Connection"
+    icon: "mdi:connection"
+    type: CP_PLUS_CONNECTED
+  - platform: truma_inetbox
+    name: "Heating Status"
+    icon: "mdi:heating-coil"
+    type: HEATER_ROOM
+  - platform: truma_inetbox
+    name: "Water Status"
+    icon: "mdi:water-boiler"
+    type: HEATER_WATER
+  - platform: truma_inetbox
+    name: "Heating Error"
+    icon: "mdi:alert"
+    type: HEATER_HAS_ERROR
+
+sensor:
+  - platform: truma_inetbox
+    name: "Room Temp."
+    icon: "mdi:thermometer"
+    type: CURRENT_ROOM_TEMPERATURE
+  - platform: truma_inetbox
+    name: "Water Temp."
+    icon: "mdi:thermometer-water"
+    type: CURRENT_WATER_TEMPERATURE
+  - platform: truma_inetbox
+    name: "Error Code"
+    icon: "mdi:message-alert"
+    type: HEATER_ERROR_CODE
+
+button:
+  - platform: restart
+    name: "Restart ESP32"
+    icon: "mdi:restart-alert"
