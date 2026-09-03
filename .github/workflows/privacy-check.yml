@@ -1,0 +1,17 @@
+name: Privacy check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  privacy-check:
+    permissions:
+      contents: read
+    uses: 7wells/repo-privacy-check-public/.github/workflows/privacy-check.yml@d689041eb5004e45c1902b6e76659c7473aa0afa # v0.3.2 public full-scan workflow
