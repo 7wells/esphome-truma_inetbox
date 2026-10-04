@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "attestations": [
+    {
+      "blob": "789fc9417abd7c3da87ce16209e7c90f04e16bf2",
+      "commit": "03af56f8efc2d8eb7cb82f2730d76f4e2a127d08",
+      "findingId": "sha256:07906027b7ca7cb4a675c437e311ed9615bbcf014a02e5ece0924b9f3eab9851",
+      "line": 2,
+      "path": "configs/secrets.yaml.example",
+      "ruleId": "literal-credential-assignment"
+    },
+    {
+      "blob": "789fc9417abd7c3da87ce16209e7c90f04e16bf2",
+      "commit": "03af56f8efc2d8eb7cb82f2730d76f4e2a127d08",
+      "findingId": "sha256:f49731546e180dc63c046c8b4e7a7204f8eef6280e795dbab4997e6fed174f56",
+      "line": 5,
+      "path": "configs/secrets.yaml.example",
+      "ruleId": "literal-credential-assignment"
+    },
+    {
+      "blob": "789fc9417abd7c3da87ce16209e7c90f04e16bf2",
+      "commit": "03af56f8efc2d8eb7cb82f2730d76f4e2a127d08",
+      "findingId": "sha256:fef7e3e9caaa1bad9b381f9d9c230b71f4d1af7ef9d2534a0b912115b481b62e",
+      "line": 8,
+      "path": "configs/secrets.yaml.example",
+      "ruleId": "literal-credential-assignment"
+    },
+    {
+      "blob": "789fc9417abd7c3da87ce16209e7c90f04e16bf2",
+      "commit": "03af56f8efc2d8eb7cb82f2730d76f4e2a127d08",
+      "findingId": "sha256:9371a4e157b7c55f1914e99bdd42928c7e3c7b904373d78f385cbc2146433621",
+      "line": 10,
+      "path": "configs/secrets.yaml.example",
+      "ruleId": "literal-credential-assignment"
+    },
+    {
+      "blob": "1b072f989c032e5a0202787e87423418da397e32",
+      "commit": "4530c5c966863e77f388464a1414ec546cde2025",
+      "findingId": "sha256:c14012ad92b924d2565bf77310b4691e7973a85c4e847e3ecc34af2891f5092a",
+      "line": 252,
+      "path": "truma.yaml",
+      "ruleId": "literal-credential-assignment"
+    },
+    {
+      "blob": "0ccbaeba23637f182c636a3ada958b188652d2f7",
+      "commit": "1dfe75af444951b4ed1800301bf82a820e00cfc6",
+      "findingId": "sha256:7745323547209aa6e9eefba8068a1c9c7b4488109ff67017c7c5169d90ee1807",
+      "line": 249,
+      "path": "truma.yaml",
+      "ruleId": "literal-credential-assignment"
+    },
+    {
+      "blob": "9175b715922b6d6d2c127c734d34b432a5d7a29f",
+      "commit": "084f1ec2111da6c232b4588555a8774f452e7401",
+      "findingId": "sha256:67b5d5d47db8f9575cc2ee8e3d8db87a7b4ba77ba68d918c66aafde4177d8cce",
+      "line": 239,
+      "path": "truma.yaml",
+      "ruleId": "literal-credential-assignment"
+    },
+    {
+      "blob": "c879af7914efc4bffeed6753cc8fb2d91e30e229",
+      "commit": "ccb7b956f8efe664f42d45d8bbe0a16e70657481",
+      "findingId": "sha256:829e46a7c924c8ce8a482389070a841759f6b5ba77c6642a569ab13f52d499df",
+      "line": 247,
+      "path": "truma.yaml",
+      "ruleId": "literal-credential-assignment"
+    }
+  ]
+}

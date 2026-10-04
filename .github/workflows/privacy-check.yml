@@ -14,4 +14,4 @@ jobs:
   privacy-check:
     permissions:
       contents: read
-    uses: 7wells/repo-privacy-check-public/.github/workflows/privacy-check.yml@d689041eb5004e45c1902b6e76659c7473aa0afa # v0.3.2 public full-scan workflow
+    uses: 7wells/repo-privacy-check-public/.github/workflows/privacy-check.yml@422ddf8ac8068c3606381222b7a4abd9815954c9 # reviewed public full-scan workflow
