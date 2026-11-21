@@ -1,6 +1,7 @@
 # Minimal Truma ESPHome Repo
-
 Minimal ESPHome setup for a Smartavan-style ESP32 controller that talks to a Truma CP Plus through the `truma_inetbox` component.
+[![Privacy Check](https://github.com/7wells/esphome-truma_inetbox/actions/workflows/privacy-check.yml/badge.svg?branch=main)](https://github.com/7wells/esphome-truma_inetbox/actions/workflows/privacy-check.yml)
+
 
 ## Upstream And References
 
